@@ -11,5 +11,8 @@ class Storage{
   int get();
   void init();
 
+  void setLong(long number);
+  long getLong();
+
 };
 #endif
