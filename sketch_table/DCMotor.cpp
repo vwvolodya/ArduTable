@@ -2,8 +2,6 @@
 #include "DCMotor.h"
 #include "StateManagement.h"
 
-#define DUTY_CYCLE_INCREMENT 5
-
 
 int DCMotor::motion2PinSignal(motorDirectionEnum m) {
   int dir;
@@ -206,19 +204,34 @@ motorDirectionEnum DCMotor::determineDirection(motorDirectionEnum intendedDirect
   return result;
 }
 
+int DCMotor::accelerationFunction(unsigned short step){
+  // linear function with 25 steps y = 10x
+  // int dutyCycleValue = (int)10 * step;
+
+  //logarithmic function with 25 steps y = 74 * ln(x+1)
+  // int dutyCycleValue = (int) 74 * log(step + 1);
+
+  //logarithmic function with 25 steps y = 93 ln(0.5x + 1) or y = 101 ln(0.4x +1)
+  int dutyCycleValue = (int) 101 * log(0.4 * step + 1);
+
+  dutyCycleValue = min(dutyCycleValue, this->maxLoad);
+  return dutyCycleValue;
+}
+
 int DCMotor::calculateDutyCycle(motorStateEnum state) {
-  int dutyCycle;
+  unsigned short dutyCycle;
   if (state == STOPPED) {
     dutyCycle = 0;
   } else if (state == STARTING) {
-    dutyCycle = min(this->ms.currentMotorDutyCycle + DUTY_CYCLE_INCREMENT, this->maxLoad);
+    dutyCycle = min(this->ms.currentMotorDutyCycle + this->dutyCycleIncrement, this->rampUpCycles - 1);  // -1 because count from 0
   } else if (state == MOVING) {
-    dutyCycle = this->maxLoad;
+    dutyCycle = this->rampUpCycles;
   } else if (state == STOPPING) {
-    dutyCycle = max(this->ms.currentMotorDutyCycle - DUTY_CYCLE_INCREMENT, 0);
+    dutyCycle = max(this->ms.currentMotorDutyCycle - this->dutyCycleIncrement, 0);
   } else {
     this->errorCode = 144;
   }
+  
   return dutyCycle;
 }
 
@@ -245,10 +258,14 @@ int DCMotor::getErrorCode() {
 }
 
 void DCMotor::intelligentMove(motorDirectionEnum intendedDirection) {
+  //perception
   motorStateEnum calculatedState = this->determineState(intendedDirection);
+  //planning
   motorDirectionEnum calculatedDirection = this->determineDirection(intendedDirection, calculatedState);
   int calculatedDutyCycle = this->calculateDutyCycle(calculatedState);
-  this->move(calculatedDirection, calculatedDutyCycle);
+  int dutyCycleValue = this->accelerationFunction(calculatedDutyCycle);
+  //controll
+  this->move(calculatedDirection, dutyCycleValue);
   this->updateState(calculatedDirection, calculatedState, calculatedDutyCycle);
 }
 

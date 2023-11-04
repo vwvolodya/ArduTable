@@ -9,8 +9,8 @@
 #define PWM_MOTOR2_PIN 5
 #define DIR_MOTOR1_PIN 7    
 #define DIR_MOTOR2_PIN 4
-#define UP_BUTTON_PIN 3
-#define DOWN_BUTTON_PIN 2
+#define UP_BUTTON_PIN 2
+#define DOWN_BUTTON_PIN 3
 
 // making interval longer for debugging
 #define CONTROLL_INTERVAL 20
@@ -30,7 +30,7 @@ unsigned long previousMillis;
 
 
 void setup() {
-  Serial.begin(9600);
+  // Serial.begin(9600);
   leftMotor.init();
   rightMotor.init();
   upButton.init();
@@ -45,25 +45,22 @@ void loop() {
     upButton.update();
     downButton.update();
     if (upButton.isPressed()){
-      Serial.println("UP");
       leftMotor.up();
       rightMotor.up();
     }
     else if (downButton.isPressed()){
-      Serial.println("DOWN");
       leftMotor.down();
       rightMotor.down();
     }
     else{
-      Serial.println("STOP");
       leftMotor.stop();
       rightMotor.stop();
     }
 
-    Serial.println(leftMotor.getDutyCycle(), DEC);
-    Serial.println(leftMotor.getDirection());
-    Serial.println(leftMotor.getState(), DEC);
-    Serial.println(leftMotor.getErrorCode(), DEC);
+    // Serial.println(leftMotor.getDutyCycle(), DEC);
+    // Serial.println(leftMotor.getDirection());
+    // Serial.println(leftMotor.getState(), DEC);
+    // Serial.println(leftMotor.getErrorCode(), DEC);
   }
 }
 
