@@ -14,6 +14,9 @@ int DCMotor::motion2PinSignal(motorDirectionEnum m) {
     case DOWN:
       dir = HIGH;
       break;
+    case STOP:
+      dir = LOW;
+      break;
     default:
       break;
   }
@@ -237,7 +240,7 @@ motorStateEnum DCMotor::getState() {
   return this->ms.currentMotorState;
 }
 
-int DCMotor::getErrorCode(){
+int DCMotor::getErrorCode() {
   return this->errorCode;
 }
 

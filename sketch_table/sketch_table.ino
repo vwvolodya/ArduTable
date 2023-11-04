@@ -20,11 +20,11 @@
 volatile TablePosition tablePosition = TablePosition();
 
 
-DCMotor leftMotor(PWM_MOTOR1_PIN, DIR_MOTOR1_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
-DCMotor rightMotor(PWM_MOTOR2_PIN, DIR_MOTOR2_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
+DCMotor leftMotor = DCMotor(PWM_MOTOR1_PIN, DIR_MOTOR1_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
+DCMotor rightMotor = DCMotor(PWM_MOTOR2_PIN, DIR_MOTOR2_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
 
-PushButton upButton(UP_BUTTON_PIN);
-PushButton downButton(DOWN_BUTTON_PIN);
+PushButton upButton = PushButton(UP_BUTTON_PIN);
+PushButton downButton = PushButton(DOWN_BUTTON_PIN);
 
 unsigned long previousMillis;
 

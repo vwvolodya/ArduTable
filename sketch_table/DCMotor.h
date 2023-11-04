@@ -17,7 +17,6 @@ private:
   motorDirectionEnum determineDirection(motorDirectionEnum intendedDirection, motorStateEnum calculatedState);
   int calculateDutyCycle(motorStateEnum state);
   void updateState(motorDirectionEnum curMotDir, motorStateEnum curMotSt, int curMotDutyCycle);
-
   void intelligentMove(motorDirectionEnum intendedDirection);
 
 public:
@@ -28,8 +27,8 @@ public:
   int getDutyCycle();
 
   int getErrorCode();
-
   void init();
+
   void up();
   void down();
   void stop();
