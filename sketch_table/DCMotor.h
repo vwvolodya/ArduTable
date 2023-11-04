@@ -1,35 +1,34 @@
 #ifndef DC_MOTOR_H
 #define DC_MOTOR_H
+#include "StateManagement.h"
 
-enum motion {
-  UP,
-  DOWN,
-  STOP
-};
-
-enum states {
-  STARTING,
-  MOVING,
-  STOPPING,
-  STOPPED
-};
 
 class DCMotor {
 private:
-
   byte pwmPin;
   byte directionPin;
-  
-  motion prevDirection;
-  states prevState;
   int maxLoad;
-  int prevDutyCycle;
+  MotorState ms;
+  int errorCode;
+  
+  int motion2PinSignal(motorDirectionEnum m);
+  void move(motorDirectionEnum m, int dutyCycle);
+  motorStateEnum determineState(motorDirectionEnum intendedDirection);
+  motorDirectionEnum determineDirection(motorDirectionEnum intendedDirection, motorStateEnum calculatedState);
+  int calculateDutyCycle(motorStateEnum state);
+  void updateState(motorDirectionEnum curMotDir, motorStateEnum curMotSt, int curMotDutyCycle);
 
-  int motion2PinSignal(motion m);
-  void move(motion m, int dutyCycle);
+  void intelligentMove(motorDirectionEnum intendedDirection);
 
 public:
-  DCMotor(byte pwmPin, byte directionPin);
+  DCMotor(byte pwmPin, byte directionPin, int maxLoad);
+
+  motorDirectionEnum getDirection();
+  motorStateEnum getState();
+  int getDutyCycle();
+
+  int getErrorCode();
+
   void init();
   void up();
   void down();
