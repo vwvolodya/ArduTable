@@ -15,7 +15,7 @@
 // making interval longer for debugging
 #define CONTROLL_INTERVAL 20
 #define MOTOR_MAX_LOAD_DUTY_CYCLE 240
-#define STARTUP_DELAY 5000
+#define STARTUP_DELAY 2000
 
 volatile TablePosition tablePosition = TablePosition();
 
@@ -24,6 +24,7 @@ DCMotor leftMotor(PWM_MOTOR1_PIN, DIR_MOTOR1_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
 DCMotor rightMotor(PWM_MOTOR2_PIN, DIR_MOTOR2_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
 
 PushButton upButton(UP_BUTTON_PIN);
+PushButton downButton(DOWN_BUTTON_PIN);
 
 unsigned long previousMillis;
 
@@ -33,18 +34,25 @@ void setup() {
   leftMotor.init();
   rightMotor.init();
   upButton.init();
-  previousMillis = STARTUP_DELAY;  // setting starting point at 4 seconds from boot
+  downButton.init();
+  previousMillis = STARTUP_DELAY;  // setting starting point at 2 seconds from boot
 }
 
 void loop() {
   unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= CONTROLL_INTERVAL) {
+  if (currentMillis - previousMillis >= CONTROLL_INTERVAL && currentMillis > previousMillis) {
     previousMillis = currentMillis;
     upButton.update();
+    downButton.update();
     if (upButton.isPressed()){
       Serial.println("UP");
       leftMotor.up();
       rightMotor.up();
+    }
+    else if (downButton.isPressed()){
+      Serial.println("DOWN");
+      leftMotor.down();
+      rightMotor.down();
     }
     else{
       Serial.println("STOP");
