@@ -1,6 +1,9 @@
 #include "DCMotor.h"
 #include "StateManagement.h"
 #include "PushButton.h"
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
 
 #define LED_INTERNAL_PIN 13
 
@@ -19,6 +22,27 @@
 
 volatile TablePosition tablePosition = TablePosition();
 
+LiquidCrystal_I2C lcd(0x27,20,4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
+
+void displayPrint(LiquidCrystal_I2C display, int firstValue, int secondValue){
+  const int display_size = 16;
+
+  char firstRowBuffer[display_size];
+  firstRowBuffer[0] = '\0';
+  
+  char secondRowBuffer[display_size];
+  secondRowBuffer[0] = '\0';
+
+  snprintf(firstRowBuffer, sizeof(firstRowBuffer), "Value: %i", firstValue);
+  snprintf(secondRowBuffer, sizeof(secondRowBuffer), "Value: %i", secondValue);
+
+  display.clear();
+  display.setCursor(0,0);
+  display.print(firstRowBuffer);
+
+  display.setCursor(0,1);
+  display.print(secondRowBuffer);
+}
 
 DCMotor leftMotor = DCMotor(PWM_MOTOR1_PIN, DIR_MOTOR1_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
 DCMotor rightMotor = DCMotor(PWM_MOTOR2_PIN, DIR_MOTOR2_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
@@ -31,6 +55,9 @@ unsigned long previousMillis;
 
 void setup() {
   // Serial.begin(9600);
+  lcd.init();
+  lcd.backlight();
+  
   leftMotor.init();
   rightMotor.init();
   upButton.init();
@@ -58,9 +85,7 @@ void loop() {
     }
 
     // Serial.println(leftMotor.getDutyCycle(), DEC);
-    // Serial.println(leftMotor.getDirection());
-    // Serial.println(leftMotor.getState(), DEC);
-    // Serial.println(leftMotor.getErrorCode(), DEC);
+    displayPrint(lcd, leftMotor.getDutyCycle(), rightMotor.getDutyCycle());
   }
 }
 
