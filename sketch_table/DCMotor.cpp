@@ -30,10 +30,11 @@ DCMotor::DCMotor(byte pwmPin, byte directionPin, int maxLoad) {
 }
 
 void DCMotor::init() {
-  pinMode(this->directionPin, OUTPUT);
   pinMode(this->pwmPin, OUTPUT);
-  // set to zeros control ports;
-  digitalWrite(this->directionPin, 0);
+  pinMode(this->directionPin, OUTPUT);
+  
+  // set pwm to 0. Setting direction to 1;
+  digitalWrite(this->directionPin, HIGH);
   analogWrite(this->pwmPin, 0);
 }
 
@@ -266,6 +267,7 @@ void DCMotor::intelligentMove(motorDirectionEnum intendedDirection) {
   int dutyCycleValue = this->accelerationFunction(calculatedDutyCycle);
   //controll
   this->move(calculatedDirection, dutyCycleValue);
+  // state updates
   this->updateState(calculatedDirection, calculatedState, calculatedDutyCycle);
 }
 

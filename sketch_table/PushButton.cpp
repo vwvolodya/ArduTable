@@ -5,7 +5,6 @@
 void PushButton::init() {
   pinMode(this->pin, INPUT_PULLUP);
   this->lastReading = HIGH;
-  // this->update();
 }
 
 PushButton::PushButton(byte pin) {
