@@ -8,9 +8,9 @@ private:
   byte lastReading;
   unsigned long lastDebounceTime = 0;
   unsigned long debounceDelay = 50;
-protected:
-  void init();
+  
 public:
+void init();
   PushButton(byte pin);
   bool isPressed();
   byte getState();

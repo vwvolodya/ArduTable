@@ -3,18 +3,16 @@
 
 
 void PushButton::init() {
-  pinMode(this->pin, INPUT);
-  this->lastReading = LOW;
-  this->update();
+  pinMode(this->pin, INPUT_PULLUP);
+  this->lastReading = HIGH;
 }
 
 PushButton::PushButton(byte pin) {
   this->pin = pin;
-  this->init();
 }
 
 bool PushButton::isPressed() {
-  return (this->getState() == HIGH);
+  return (this->getState() == LOW);
 }
 
 byte PushButton::getState() {

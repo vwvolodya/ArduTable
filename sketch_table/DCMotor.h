@@ -1,36 +1,38 @@
 #ifndef DC_MOTOR_H
 #define DC_MOTOR_H
+#include "StateManagement.h"
 
-enum motion {
-  UP,
-  DOWN,
-  STOP
-};
-
-enum states {
-  STARTING,
-  MOVING,
-  STOPPING,
-  STOPPED
-};
 
 class DCMotor {
 private:
-
   byte pwmPin;
   byte directionPin;
-  
-  motion prevDirection;
-  states prevState;
   int maxLoad;
-  int prevDutyCycle;
+  MotorState ms;
+  int errorCode;
+  unsigned short rampUpCycles = 25;         // nymber of cycles for soft start / soft shutdown
+  unsigned short dutyCycleIncrement = 1;    // counting cycles instead of actual value. The value itself is a function of this number
+  
+  int motion2PinSignal(motorDirectionEnum m);
+  void move(motorDirectionEnum m, int dutyCycle);
+  motorStateEnum determineState(motorDirectionEnum intendedDirection);
+  motorDirectionEnum determineDirection(motorDirectionEnum intendedDirection, motorStateEnum calculatedState);
+  int calculateDutyCycle(motorStateEnum state);
+  void updateState(motorDirectionEnum curMotDir, motorStateEnum curMotSt, int curMotDutyCycle);
+  void intelligentMove(motorDirectionEnum intendedDirection);
 
-  int motion2PinSignal(motion m);
-  void move(motion m, int dutyCycle);
+  int accelerationFunction(unsigned short step);
 
 public:
-  DCMotor(byte pwmPin, byte directionPin);
+  DCMotor(byte pwmPin, byte directionPin, int maxLoad);
+
+  motorDirectionEnum getDirection();
+  motorStateEnum getState();
+  int getDutyCycle();
+
+  int getErrorCode();
   void init();
+
   void up();
   void down();
   void stop();

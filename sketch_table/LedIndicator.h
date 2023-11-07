@@ -8,8 +8,8 @@ private:
 public:
   LedIndicator(byte pin);
   void init();
-  void on(unsigned int duration);
-  void off(unsigned int duration);
-  void blinkN(unsigned int n, unsigned int interval);
+  void on();
+  void off();
+  void blinkN(unsigned int n);
 };
 #endif
