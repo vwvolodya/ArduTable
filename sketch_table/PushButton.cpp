@@ -2,9 +2,10 @@
 #include "PushButton.h"
 
 
-void PushButton::init() {
+void PushButton::init(unsigned long debounceDelay=50) {
   pinMode(this->pin, INPUT_PULLUP);
   this->lastReading = HIGH;
+  this->debounceDelay = debounceDelay;
 }
 
 PushButton::PushButton(byte pin) {

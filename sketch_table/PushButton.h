@@ -7,10 +7,10 @@ private:
   byte state;
   byte lastReading;
   unsigned long lastDebounceTime = 0;
-  unsigned long debounceDelay = 50;
+  unsigned long debounceDelay;
   
 public:
-void init();
+void init(unsigned long debounceDelay=50);
   PushButton(byte pin);
   bool isPressed();
   byte getState();

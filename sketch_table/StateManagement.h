@@ -15,6 +15,11 @@ enum motorStateEnum {
   STOPPED
 };
 
+enum tableControlEnum {
+  MANUAL, 
+  AUTO
+};
+
 struct MotorState{
   motorDirectionEnum currentMotorDirection = STOP;
   motorStateEnum currentMotorState = STOPPED;
@@ -25,6 +30,7 @@ struct TablePosition {
   //TODO read those values from eeprom
   long leftHallSensorCounter = 0;
   long rightHallSensorCounter = 0;
+  tableControlEnum mode = AUTO;
 
   private:
     Storage leftLegStorage{8};  //address 8
