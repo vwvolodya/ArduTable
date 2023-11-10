@@ -246,6 +246,11 @@ int DCMotor::getDutyCycle() {
   return this->ms.currentMotorDutyCycle;
 }
 
+int DCMotor::getDutyCycleValue(){
+  int r = this->accelerationFunction(this->ms.currentMotorDutyCycle);
+  return r;
+}
+
 motorDirectionEnum DCMotor::getDirection() {
   return this->ms.currentMotorDirection;
 }

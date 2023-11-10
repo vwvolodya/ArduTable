@@ -29,6 +29,7 @@ public:
   motorDirectionEnum getDirection();
   motorStateEnum getState();
   int getDutyCycle();
+  int getDutyCycleValue();
 
   int getErrorCode();
   void init();

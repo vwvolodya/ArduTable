@@ -13,7 +13,7 @@
 #define UP_BUTTON_PIN 9
 #define DOWN_BUTTON_PIN 10
 
-# define MODE_BUTTON_PIN 11
+#define MODE_BUTTON_PIN 11
 
 #define LED_PIN 13
 
@@ -35,7 +35,7 @@ LedIndicator led = LedIndicator(LED_PIN);
 LiquidCrystal_I2C lcd(0x27, 20, 4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
 
-void displayPrint(LiquidCrystal_I2C display, int firstValue, int secondValue) {
+void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, int lDuty = 0, int rDuty = 0) {
   const int display_size = 16;
 
   char firstRowBuffer[display_size];
@@ -44,10 +44,10 @@ void displayPrint(LiquidCrystal_I2C display, int firstValue, int secondValue) {
   char secondRowBuffer[display_size];
   secondRowBuffer[0] = '\0';
 
-  snprintf(firstRowBuffer, sizeof(firstRowBuffer), "Value: %i", firstValue);
-  snprintf(secondRowBuffer, sizeof(secondRowBuffer), "Value: %i", secondValue);
+  snprintf(firstRowBuffer, sizeof(firstRowBuffer), "L %i %i", lValue, lDuty);
+  snprintf(secondRowBuffer, sizeof(secondRowBuffer), "R %i %i", rValue, rDuty);
 
-  display.clear();
+  // display.clear();
   display.setCursor(0, 0);
   display.print(firstRowBuffer);
 
@@ -95,13 +95,14 @@ void setup() {
   downButton.init();
   previousMillis = STARTUP_DELAY;  // setting starting point at 2 seconds from boot
 
-  modeButton.init(25); // debounce delay
+  modeButton.init(25);  // debounce delay
   led.init();
 
   // Serial.begin(9600);
   lcd.init();
   lcd.backlight();
   lcd.clear();
+  lcd.noCursor();
 
   pinMode(HALL_1_PIN, INPUT_PULLUP);
   pinMode(HALL_2_PIN, INPUT_PULLUP);
@@ -136,27 +137,26 @@ void loop() {
 
     } else if (tablePosition.mode == MANUAL) {
       if (modeButton.isPressed()) {
-        tablePosition.mode = AUTO;  // second press of 2 buttons exits manual mode; UP/Down button become Left/Right buttons for moving DOWN only!
+        tablePosition.mode = AUTO;  // second press of 2 buttons exits manual mode; UP/Down button become Left/Right buttons for moving UP only!
         led.off();
       } else {
         if (upButton.isPressed()) {
           // up button for left motor
-          leftMotor.down();
+          leftMotor.up();
           // manually "leveling" right and left
           tablePosition.leftHallSensorCounter = tablePosition.rightHallSensorCounter;
         } else if (downButton.isPressed()) {
           // down button for right motor;
-          rightMotor.down();
+          rightMotor.up();
           tablePosition.rightHallSensorCounter = tablePosition.leftHallSensorCounter;
-        }
-        else {
-            leftMotor.stop();
-            rightMotor.stop();
+        } else {
+          leftMotor.stop();
+          rightMotor.stop();
         }
       }
     }
 
     // Serial.println(leftMotor.getDutyCycle(), DEC);
-    displayPrint(lcd, tablePosition.leftHallSensorCounter, tablePosition.rightHallSensorCounter);
+    displayPrint(lcd, tablePosition.leftHallSensorCounter, tablePosition.rightHallSensorCounter, leftMotor.getDutyCycleValue(), rightMotor.getDutyCycleValue());
   }
 }
