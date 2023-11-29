@@ -4,6 +4,8 @@
 #include "LedIndicator.h"
 #include <LiquidCrystal_I2C.h>
 
+#define DEBUG 0
+
 #define PWM_MOTOR1_PIN 6
 // right motor
 #define PWM_MOTOR2_PIN 5
@@ -56,7 +58,7 @@ void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, int lDuty =
 }
 
 DCMotor leftMotor = DCMotor(PWM_MOTOR1_PIN, DIR_MOTOR1_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
-DCMotor rightMotor = DCMotor(PWM_MOTOR2_PIN, DIR_MOTOR2_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
+DCMotor rightMotor = DCMotor(PWM_MOTOR2_PIN, DIR_MOTOR2_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE - 7);    // making right motor a tiny bit slower. actual max duty is 238. 
 
 PushButton upButton = PushButton(UP_BUTTON_PIN);
 PushButton downButton = PushButton(DOWN_BUTTON_PIN);
