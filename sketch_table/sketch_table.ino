@@ -3,6 +3,7 @@
 #include "PushButton.h"
 #include "LedIndicator.h"
 #include <LiquidCrystal_I2C.h>
+#include "IMU.h"
 
 #define DEBUG 0
 
@@ -36,8 +37,9 @@ volatile TablePosition tablePosition = TablePosition();
 LedIndicator led = LedIndicator(LED_PIN);
 LiquidCrystal_I2C lcd(0x27, 20, 4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
+IMU imu = IMU();
 
-void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, int lDuty = 0, int rDuty = 0) {
+void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, float lDuty = 0, float rDuty = 0) {
   const int display_size = 16;
 
   char firstRowBuffer[display_size];
@@ -46,8 +48,8 @@ void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, int lDuty =
   char secondRowBuffer[display_size];
   secondRowBuffer[0] = '\0';
 
-  snprintf(firstRowBuffer, sizeof(firstRowBuffer), "L %i %i", lValue, lDuty);
-  snprintf(secondRowBuffer, sizeof(secondRowBuffer), "R %i %i", rValue, rDuty);
+  snprintf(firstRowBuffer, sizeof(firstRowBuffer), "L %i %.2f", lValue, lDuty);
+  snprintf(secondRowBuffer, sizeof(secondRowBuffer), "R %i %.2f", rValue, rDuty);
 
   // display.clear();
   display.setCursor(0, 0);
@@ -106,6 +108,8 @@ void setup() {
   lcd.clear();
   lcd.noCursor();
 
+  imu.init(false);
+
   pinMode(HALL_1_PIN, INPUT_PULLUP);
   pinMode(HALL_2_PIN, INPUT_PULLUP);
 
@@ -120,6 +124,7 @@ void loop() {
     modeButton.update();
     upButton.update();
     downButton.update();
+    
     if (tablePosition.mode == AUTO) {
       if (modeButton.isPressed()) {
         tablePosition.mode = MANUAL;  // entering manual mode here;
@@ -158,7 +163,7 @@ void loop() {
       }
     }
 
-    // Serial.println(leftMotor.getDutyCycle(), DEC);
-    displayPrint(lcd, tablePosition.leftHallSensorCounter, tablePosition.rightHallSensorCounter, leftMotor.getDutyCycleValue(), rightMotor.getDutyCycleValue());
+    Measurements angles = imu.getData();
+    displayPrint(lcd, tablePosition.leftHallSensorCounter, tablePosition.rightHallSensorCounter, angles.x, angles.y);
   }
 }
