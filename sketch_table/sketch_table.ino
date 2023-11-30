@@ -4,6 +4,8 @@
 #include "LedIndicator.h"
 #include <LiquidCrystal_I2C.h>
 
+#define DEBUG 0
+
 #define PWM_MOTOR1_PIN 6
 // right motor
 #define PWM_MOTOR2_PIN 5
@@ -35,7 +37,7 @@ LedIndicator led = LedIndicator(LED_PIN);
 LiquidCrystal_I2C lcd(0x27, 20, 4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
 
-void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, int lDuty = 0, int rDuty = 0) {
+void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, float lDuty = 0, float rDuty = 0) {
   const int display_size = 16;
 
   char firstRowBuffer[display_size];
@@ -44,8 +46,8 @@ void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, int lDuty =
   char secondRowBuffer[display_size];
   secondRowBuffer[0] = '\0';
 
-  snprintf(firstRowBuffer, sizeof(firstRowBuffer), "L %i %i", lValue, lDuty);
-  snprintf(secondRowBuffer, sizeof(secondRowBuffer), "R %i %i", rValue, rDuty);
+  snprintf(firstRowBuffer, sizeof(firstRowBuffer), "L %i %.2f", lValue, lDuty);
+  snprintf(secondRowBuffer, sizeof(secondRowBuffer), "R %i %.2f", rValue, rDuty);
 
   // display.clear();
   display.setCursor(0, 0);
@@ -56,7 +58,7 @@ void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, int lDuty =
 }
 
 DCMotor leftMotor = DCMotor(PWM_MOTOR1_PIN, DIR_MOTOR1_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
-DCMotor rightMotor = DCMotor(PWM_MOTOR2_PIN, DIR_MOTOR2_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE);
+DCMotor rightMotor = DCMotor(PWM_MOTOR2_PIN, DIR_MOTOR2_PIN, MOTOR_MAX_LOAD_DUTY_CYCLE - 7);    // making right motor a tiny bit slower. actual max duty is 238. 
 
 PushButton upButton = PushButton(UP_BUTTON_PIN);
 PushButton downButton = PushButton(DOWN_BUTTON_PIN);
@@ -118,6 +120,7 @@ void loop() {
     modeButton.update();
     upButton.update();
     downButton.update();
+    
     if (tablePosition.mode == AUTO) {
       if (modeButton.isPressed()) {
         tablePosition.mode = MANUAL;  // entering manual mode here;
@@ -156,7 +159,6 @@ void loop() {
       }
     }
 
-    // Serial.println(leftMotor.getDutyCycle(), DEC);
-    displayPrint(lcd, tablePosition.leftHallSensorCounter, tablePosition.rightHallSensorCounter, leftMotor.getDutyCycleValue(), rightMotor.getDutyCycleValue());
+    displayPrint(lcd, tablePosition.leftHallSensorCounter, tablePosition.rightHallSensorCounter, 0, 0);
   }
 }
