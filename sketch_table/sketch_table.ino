@@ -3,7 +3,6 @@
 #include "PushButton.h"
 #include "LedIndicator.h"
 #include <LiquidCrystal_I2C.h>
-#include "IMU.h"
 
 #define DEBUG 0
 
@@ -37,7 +36,6 @@ volatile TablePosition tablePosition = TablePosition();
 LedIndicator led = LedIndicator(LED_PIN);
 LiquidCrystal_I2C lcd(0x27, 20, 4);  // set the LCD address to 0x27 for a 16 chars and 2 line display
 
-IMU imu = IMU();
 
 void displayPrint(LiquidCrystal_I2C display, int lValue, int rValue, float lDuty = 0, float rDuty = 0) {
   const int display_size = 16;
@@ -108,8 +106,6 @@ void setup() {
   lcd.clear();
   lcd.noCursor();
 
-  imu.init(false);
-
   pinMode(HALL_1_PIN, INPUT_PULLUP);
   pinMode(HALL_2_PIN, INPUT_PULLUP);
 
@@ -163,7 +159,6 @@ void loop() {
       }
     }
 
-    Measurements angles = imu.getData();
-    displayPrint(lcd, tablePosition.leftHallSensorCounter, tablePosition.rightHallSensorCounter, angles.x, angles.y);
+    displayPrint(lcd, tablePosition.leftHallSensorCounter, tablePosition.rightHallSensorCounter, 0, 0);
   }
 }
